@@ -1,4 +1,10 @@
 django
 gunicorn
-requests
 django-heroku
+requests
+pandas
+dash
+dash_extensions
+pgeocode
+bs4
+get_stores
