@@ -18,15 +18,16 @@ server = app.server
 
 #---------------------------------------------------------------
 app.layout = html.Div([
-    dcc.Textarea(
-        id='textarea-state-example',
-        style={'width': '5%', 'height': 200},
-    ),
-    html.Br(),
-    #html.Button('Submit', id='textarea-state-example-button', n_clicks=0),
-    html.Button("Download csv", id="btn", n_clicks=0), 
-    Download(id="download"),
-    #html.Div(id="table")
+                        html.H1("Carrier Locator"),
+                        dcc.Textarea(
+                            id='textarea-state-example',
+                            style={'width': '5%', 'height': 200},
+                        ),
+                        html.Br(),
+                        #html.Button('Submit', id='textarea-state-example-button', n_clicks=0),
+                        html.Button("Download csv", id="btn", n_clicks=0), 
+                        Download(id="download"),
+                        #html.Div(id="table")
 ])
 
 #---------------------------------------------------------------
