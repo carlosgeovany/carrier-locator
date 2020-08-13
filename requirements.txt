@@ -7,4 +7,3 @@ dash
 dash_extensions
 pgeocode
 bs4
-get_stores
