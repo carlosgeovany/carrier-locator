@@ -13,6 +13,7 @@ from dash_extensions.snippets import send_data_frame
 external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server
 
 #---------------------------------------------------------------
 app.layout = html.Div([
@@ -56,4 +57,3 @@ def update_output(n_clicks, zip_codes):
 if __name__ == '__main__':
     app.run_server(debug=True)
 
-"""
