@@ -9,7 +9,7 @@ from dash.exceptions import PreventUpdate
 from get_stores import get_stores
 from dash_extensions import Download
 from dash_extensions.snippets import send_data_frame
-
+from maps import *
 
 external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 
@@ -32,7 +32,7 @@ app.layout = html.Div(
                 dcc.Textarea(
                     id='textarea_state',
                     style={'width': '5%', 'height': 200}
-                )
+                ),
             ]
         ),
         html.Div(style={'padding': 5, 'margin': 20},
@@ -41,12 +41,17 @@ app.layout = html.Div(
                 html.Button("Download csv", id="button_download", n_clicks=0)
             ]
         ),
-        html.Table(id="table", style={'padding': 5, 'margin': 20})
+        html.Iframe(id='map', srcDoc=open('locations.html', 'r').read()),
+        html.Table(id="table", style={'padding': 5, 'margin': 20, 'position':'absolute', 'top':100})
+        
     ]
 )
 #---------------------------------------------------------------
 @app.callback(
-    Output('table', 'children'),
+    [
+        Output('table', 'children'),
+        Output('map', 'srcDoc')
+    ],
     [Input('button_submit', 'n_clicks')],
     [State('textarea_state', 'value')]
 )
@@ -57,33 +62,30 @@ def get_table(n_clicks, zip_codes):
     else:
         zip_codes = ''.join(e for e in zip_codes if e.isalnum())
         zip_codes = [zip_codes[i:i+5] for i in range(0, len(zip_codes), 5)]
-        data=[]
+        data = []
         for z in zip_codes:
             data.append(get_stores(z))
         df=pd.concat(data)
-        #get_map(zip_codes, df)
+        map_folium(zip_codes, df)
         data = df.to_dict('records')
         columns =  [{"name": i, "id": i,} for i in (df.columns)]
         return dt.DataTable(
                             data=data, 
-                            columns=columns,
-                            fixed_rows={'headers': True},
-                            style_table={'height': 400},
+                            columns=columns,                            
                             style_cell={
                                 'overflow': 'hidden',
                                 'textOverflow': 'ellipsis',
                                 'maxWidth': 88
                             }
-        )
+        ),open('locations.html', 'r').read()
+        
                             #send_data_frame(df.to_csv, filename="zip_codes.csv")
-                            
+
 #@app.callback(
 #    Output("download", "data"), 
 #    [Input("button_download", "n_clicks")]
 #)
 
-#def get_map(zip_codes, df):
-#    return maps(zip_codes, df)
 
 if __name__ == '__main__':
     app.run_server(debug=True)

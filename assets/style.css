@@ -3,7 +3,7 @@ body {
     font-family: "Droid Sans", Helvetica, Arial, sans-serif;
     font-size: 11px;
     margin: 0;
-    background-color: #E8E8E8;
+    background-color: white;
 }
 
 h1{
@@ -24,4 +24,18 @@ h2 {
 
 div {
     background-color: white;
+}
+
+iframe
+    {
+    height: 600px;
+    width: 700px;
+    position:absolute; 
+    right: 28px;
+    top: 100px;
+}
+
+table{
+    position: absolute;
+    top: 600px;
 }
