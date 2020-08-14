@@ -3,6 +3,7 @@ import dash
 import dash_table as dt
 import dash_core_components as dcc
 import dash_html_components as html
+import folium
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 from get_stores import get_stores
@@ -14,35 +15,43 @@ external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.title = 'Carrier Locator'
+
 server = app.server
 
 #---------------------------------------------------------------
-app.layout = html.Div([
-                        html.H1("Carrier Locator"),
-                        dcc.Textarea(
-                            id='textarea-state-example',
-                            style={'width': '5%', 'height': 200},
-                        ),
-                        html.Br(),
-                        #html.Button('Submit', id='textarea-state-example-button', n_clicks=0),
-                        html.Button("Download csv", id="btn", n_clicks=0), 
-                        Download(id="download"),
-                        #html.Div(id="table")
-])
-
+app.layout = html.Div(
+    children=[
+        html.Div(style={'padding': 5, 'margin': 20},
+            children=[
+                html.H1("Carrier Locator")
+            ]
+        ),
+        html.Div(style={'padding': 5, 'margin': 20},
+            children=[
+                html.H2("Type the zip codes in the text box, one zip code per line:"),
+                dcc.Textarea(
+                    id='textarea_state',
+                    style={'width': '5%', 'height': 200}
+                )
+            ]
+        ),
+        html.Div(style={'padding': 5, 'margin': 20},
+            children=[
+                html.Button('Submit', id='button_submit', n_clicks=0),
+                html.Button("Download csv", id="button_download", n_clicks=0)
+            ]
+        ),
+        html.Table(id="table", style={'padding': 5, 'margin': 20})
+    ]
+)
 #---------------------------------------------------------------
-#@app.callback(
-#    Output('table', 'children'),
-#    [Input('textarea-state-example-button', 'n_clicks')],
-#    [State('textarea-state-example', 'value')]
-#)
 @app.callback(
-    Output("download", "data"), 
-    [Input("btn", "n_clicks")],
-    [State('textarea-state-example', 'value')]
+    Output('table', 'children'),
+    [Input('button_submit', 'n_clicks')],
+    [State('textarea_state', 'value')]
 )
 
-def update_output(n_clicks, zip_codes):
+def get_table(n_clicks, zip_codes):
     if zip_codes is None:
         raise PreventUpdate
     else:
@@ -52,9 +61,29 @@ def update_output(n_clicks, zip_codes):
         for z in zip_codes:
             data.append(get_stores(z))
         df=pd.concat(data)
-        #data = df.to_dict('rows')
-        #columns =  [{"name": i, "id": i,} for i in (df.columns)]
-        return send_data_frame(df.to_csv, filename="zip_codes.csv")#dt.DataTable(data=data, columns=columns)
+        #get_map(zip_codes, df)
+        data = df.to_dict('records')
+        columns =  [{"name": i, "id": i,} for i in (df.columns)]
+        return dt.DataTable(
+                            data=data, 
+                            columns=columns,
+                            fixed_rows={'headers': True},
+                            style_table={'height': 400},
+                            style_cell={
+                                'overflow': 'hidden',
+                                'textOverflow': 'ellipsis',
+                                'maxWidth': 88
+                            }
+        )
+                            #send_data_frame(df.to_csv, filename="zip_codes.csv")
+                            
+#@app.callback(
+#    Output("download", "data"), 
+#    [Input("button_download", "n_clicks")]
+#)
+
+#def get_map(zip_codes, df):
+#    return maps(zip_codes, df)
 
 if __name__ == '__main__':
     app.run_server(debug=True)

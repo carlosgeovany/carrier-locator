@@ -7,3 +7,4 @@ dash
 dash_extensions
 pgeocode
 bs4
+folium
